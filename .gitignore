@@ -10,6 +10,12 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+coverage
+.env
+.env.*
+.vite
+.cache
+.parcel-cache
 *.local
 
 # Editor directories and files
