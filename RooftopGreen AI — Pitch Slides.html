@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RooftopGreen AI — Pitch Slides</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<style>
+:root{--page:#E7EFEA;--ctl:#064E3B;--ctlbg:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#0B1A14;--ctl:#D1FAE5;--ctlbg:#12281F}}
+:root[data-theme="dark"]{--page:#0B1A14;--ctl:#D1FAE5;--ctlbg:#12281F}
+html,body{height:100%;margin:0}
+body{background:var(--page);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;overflow:hidden}
+#stage{position:relative;box-shadow:0 20px 50px -20px rgba(6,78,59,.35);border-radius:6px;overflow:hidden}
+#canvas{width:1280px;height:720px;position:absolute;top:0;left:0;transform-origin:top left}
+.slide{display:none;position:absolute;inset:0;background:linear-gradient(135deg,#fff 0%,#fff 45%,#ECFDF5 100%);color:#064E3B}
+.slide.on{display:block}
+.ic{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.card{background:#fff;border:1px solid #D1FAE5;border-radius:16px;box-shadow:0 4px 14px -4px rgba(6,78,59,.12),0 1px 3px rgba(6,78,59,.06)}
+.chip{background:#ECFDF5;color:#059669;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.ctl{background:var(--ctlbg);color:var(--ctl);border:1px solid #A7F3D0;border-radius:999px;padding:8px 18px;font-weight:600;font-size:14px;display:flex;align-items:center;gap:6px;cursor:pointer}
+.ctl:hover{background:#10B981;color:#fff}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<symbol id="monitor" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></symbol>
+<symbol id="server" viewBox="0 0 24 24"><rect width="20" height="8" x="2" y="2" rx="2"/><rect width="20" height="8" x="2" y="14" rx="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></symbol>
+<symbol id="sparkles" viewBox="0 0 24 24"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></symbol>
+<symbol id="layers" viewBox="0 0 24 24"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></symbol>
+<symbol id="cols" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 3v18"/></symbol>
+<symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+<symbol id="shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="sprout" viewBox="0 0 24 24"><path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/></symbol>
+<symbol id="bag" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></symbol>
+<symbol id="check" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></symbol>
+<symbol id="flag" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></symbol>
+<symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+<symbol id="left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+</defs>
+</svg>
+
+<div id="stage"><div id="canvas">
+
+<!-- SLIDE 1 -->
+<section class="slide on" id="s1">
+  <div class="absolute left-14 top-10 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#ECFDF5] border border-[#A7F3D0] text-[#059669] font-semibold text-[15px]">
+    <svg class="ic w-4 h-4"><use href="#sprout"/></svg>RooftopGreen AI
+  </div>
+  <h1 class="absolute left-14 top-[92px] text-[42px] leading-tight font-extrabold tracking-tight text-[#064E3B]">AI-Native Architecture &amp; Engineering Pipeline</h1>
+
+  <div class="absolute left-14 right-14 top-[190px] flex items-stretch justify-between">
+    <!-- 1 -->
+    <div class="card w-[204px] p-5 flex flex-col">
+      <div class="flex items-center justify-between mb-4"><div class="chip w-11 h-11"><svg class="ic w-6 h-6"><use href="#monitor"/></svg></div><span class="text-[13px] font-bold text-[#10B981]">Step 1</span></div>
+      <div class="text-[19px] font-bold">Frontend</div>
+      <div class="mt-2 text-[15px] font-semibold text-[#065F46] leading-snug">React + Vite + Zustand</div>
+      <div class="mt-3 pt-3 border-t border-[#D1FAE5] text-[14px] italic text-[#047857] leading-snug">Normalized 0–1 Pins &amp; Subtractive Grid</div>
+    </div>
+    <div class="flex items-center text-[#10B981]"><svg class="ic w-8 h-8" style="stroke-width:2.5"><use href="#arrow"/></svg></div>
+    <!-- 2 -->
+    <div class="card w-[204px] p-5 flex flex-col">
+      <div class="flex items-center justify-between mb-4"><div class="chip w-11 h-11"><svg class="ic w-6 h-6"><use href="#server"/></svg></div><span class="text-[13px] font-bold text-[#10B981]">Step 2</span></div>
+      <div class="text-[19px] font-bold">Backend</div>
+      <div class="mt-2 text-[15px] font-semibold text-[#065F46] leading-snug">FastAPI (Python)</div>
+      <div class="mt-3 pt-3 border-t border-[#D1FAE5] text-[14px] italic text-[#047857] leading-snug">REST API &amp; 429 Rate-Limit Backoff</div>
+    </div>
+    <div class="flex items-center text-[#10B981]"><svg class="ic w-8 h-8" style="stroke-width:2.5"><use href="#arrow"/></svg></div>
+    <!-- 3 -->
+    <div class="card w-[204px] p-5 flex flex-col">
+      <div class="flex items-center justify-between mb-4"><div class="chip w-11 h-11"><svg class="ic w-6 h-6"><use href="#sparkles"/></svg></div><span class="text-[13px] font-bold text-[#10B981]">Step 3</span></div>
+      <div class="text-[19px] font-bold">AI Models</div>
+      <div class="mt-2 text-[15px] font-semibold text-[#065F46] leading-snug">Replicate <span class="mono text-[13px]">flux-kontext-pro</span> (v20 Prompts) + Gemini 3.5 Flash</div>
+      <div class="mt-3 pt-3 border-t border-[#D1FAE5] text-[14px] italic text-[#047857] leading-snug">Rendering &amp; BARI/DAE RAG</div>
+    </div>
+    <div class="flex items-center text-[#10B981]"><svg class="ic w-8 h-8" style="stroke-width:2.5"><use href="#arrow"/></svg></div>
+    <!-- 4 -->
+    <div class="card w-[204px] p-5 flex flex-col">
+      <div class="flex items-center justify-between mb-4"><div class="chip w-11 h-11"><svg class="ic w-6 h-6"><use href="#layers"/></svg></div><span class="text-[13px] font-bold text-[#10B981]">Step 4</span></div>
+      <div class="text-[19px] font-bold leading-tight">Plant-Matte Compositor</div>
+      <div class="mt-2 text-[15px] font-semibold text-[#065F46] leading-snug"><span class="mono text-[13px]">plant_matte.py</span> (NumPy / SciPy / Pillow)</div>
+      <div class="mt-3 pt-3 border-t border-[#D1FAE5] text-[14px] italic text-[#047857] leading-snug">Floor-Only Silhouettes, No Floating Pots</div>
+    </div>
+    <div class="flex items-center text-[#10B981]"><svg class="ic w-8 h-8" style="stroke-width:2.5"><use href="#arrow"/></svg></div>
+    <!-- 5 -->
+    <div class="card w-[204px] p-5 flex flex-col" style="border-color:#10B981">
+      <div class="flex items-center justify-between mb-4"><div class="chip w-11 h-11" style="background:#10B981;color:#fff"><svg class="ic w-6 h-6"><use href="#cols"/></svg></div><span class="text-[13px] font-bold text-[#10B981]">Step 5</span></div>
+      <div class="text-[19px] font-bold">Output</div>
+      <div class="mt-2 text-[15px] font-semibold text-[#065F46] leading-snug">Pixel-Aligned Before/After Slider</div>
+      <div class="mt-3 pt-3 border-t border-[#D1FAE5] text-[14px] italic text-[#047857] leading-snug">Dynamic BOM &amp; Live Dashboard</div>
+    </div>
+  </div>
+
+  <div class="absolute left-14 right-14 bottom-12 rounded-2xl bg-[#064E3B] px-8 py-5 flex items-center justify-between mono text-[16px] text-[#D1FAE5] shadow-lg">
+    <span class="flex items-center gap-2"><svg class="ic w-5 h-5 text-[#34D399]"><use href="#check"/></svg>pytest 3/3 Passed</span>
+    <span class="text-[#10B981]">·</span>
+    <span class="flex items-center gap-2"><svg class="ic w-5 h-5 text-[#34D399]"><use href="#check"/></svg>Zero Hardcoded Fallbacks</span>
+    <span class="text-[#10B981]">·</span>
+    <span class="flex items-center gap-2"><svg class="ic w-5 h-5 text-[#34D399]"><use href="#check"/></svg>Env-Isolated API Keys</span>
+    <span class="text-[#10B981]">·</span>
+    <span class="flex items-center gap-2"><svg class="ic w-5 h-5 text-[#34D399]"><use href="#check"/></svg>BARI &amp; DAE Cited RAG</span>
+  </div>
+</section>
+
+<!-- SLIDE 2 -->
+<section class="slide" id="s2">
+  <div class="absolute left-14 top-9 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#ECFDF5] border border-[#A7F3D0] text-[#059669] font-semibold text-[15px]">
+    <svg class="ic w-4 h-4"><use href="#sprout"/></svg>RooftopGreen AI
+  </div>
+  <h1 class="absolute left-14 top-[84px] text-[40px] leading-tight font-extrabold tracking-tight text-[#064E3B]">Real-World Impact, Business Value &amp; Roadmap</h1>
+
+  <div class="absolute left-14 right-14 top-[154px] grid grid-cols-2 gap-8" style="height:424px">
+    <!-- Left -->
+    <div class="flex flex-col gap-4">
+      <div class="text-[16px] font-bold text-[#059669]">Expected Impact &amp; KPIs</div>
+      <div class="card flex-1 px-6 flex items-center gap-5">
+        <div class="chip w-14 h-14 shrink-0"><svg class="ic w-7 h-7"><use href="#clock"/></svg></div>
+        <div><div class="text-[22px] font-bold leading-tight">&lt; 2 Min Planning Time</div><div class="text-[16px] text-[#047857] mt-1 leading-snug">From bare roof photo to full blueprint &amp; BOM</div></div>
+      </div>
+      <div class="card flex-1 px-6 flex items-center gap-5">
+        <div class="chip w-14 h-14 shrink-0"><svg class="ic w-7 h-7"><use href="#shield"/></svg></div>
+        <div><div class="text-[22px] font-bold leading-tight">Wet-Load Safe &amp; Urban Cooling</div><div class="text-[16px] text-[#047857] mt-1 leading-snug">Verified under 150 kg/m² slab safety ceiling</div></div>
+      </div>
+      <div class="card flex-1 px-6 flex items-center gap-5">
+        <div class="chip w-14 h-14 shrink-0"><svg class="ic w-7 h-7"><use href="#sprout"/></svg></div>
+        <div><div class="text-[22px] font-bold leading-tight">Fresh Homegrown Food</div><div class="text-[16px] text-[#047857] mt-1 leading-snug">Empowering urban families in dense cities like Dhaka</div></div>
+      </div>
+    </div>
+    <!-- Right -->
+    <div class="flex flex-col gap-4">
+      <div class="card px-6 py-5 flex gap-4" style="border-color:#10B981">
+        <div class="chip w-11 h-11 shrink-0" style="background:#10B981;color:#fff"><svg class="ic w-6 h-6"><use href="#bag"/></svg></div>
+        <div><div class="text-[19px] font-bold leading-tight">B2B / B2C Agri-Commerce Engine</div><div class="text-[15px] text-[#047857] mt-1.5 leading-snug">50+ gardening essentials with per-item wet-load specs, 5 verified local nurseries, live BDT pricing, and bKash / Cash on Delivery checkout.</div></div>
+      </div>
+      <div class="card px-6 py-5 flex gap-4">
+        <div class="chip w-11 h-11 shrink-0"><svg class="ic w-6 h-6"><use href="#check"/></svg></div>
+        <div><div class="text-[19px] font-bold leading-tight">Working Today</div><div class="text-[15px] text-[#047857] mt-1.5 leading-snug">Full 6-step workflow, multi-view photorealistic renderer, BARI/DAE RAG Plant Doctor, Dynamic BOM, and Live Dashboard.</div></div>
+      </div>
+      <div class="card px-6 py-5 flex gap-4">
+        <div class="chip w-11 h-11 shrink-0"><svg class="ic w-6 h-6"><use href="#flag"/></svg></div>
+        <div><div class="text-[19px] font-bold leading-tight">Next Milestones</div><div class="text-[15px] text-[#047857] mt-1.5 leading-snug">Expanded local crop database · Full Bangla UI · Local nursery starter kits.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="absolute left-0 right-0 bottom-0 h-[88px] bg-[#064E3B] text-white px-14 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <svg class="ic w-8 h-8 text-[#34D399]"><use href="#sprout"/></svg>
+      <div><div class="text-[22px] font-extrabold leading-tight">RooftopGreen AI</div><div class="text-[15px] text-[#A7F3D0]">Turning every bare rooftop into a living, productive garden.</div></div>
+    </div>
+    <div class="px-5 py-2 rounded-full bg-[#10B981] text-white font-semibold text-[15px]">Plan it. Grow it. Harvest it.</div>
+  </div>
+</section>
+
+</div></div>
+
+<div id="nav" class="flex items-center gap-3">
+  <button class="ctl" id="prev" aria-label="Previous slide"><svg class="ic w-4 h-4"><use href="#left"/></svg>Previous</button>
+  <span id="count" class="text-[14px] font-semibold" style="color:var(--ctl);min-width:44px;text-align:center">1 / 2</span>
+  <button class="ctl" id="next" aria-label="Next slide">Next<svg class="ic w-4 h-4"><use href="#right"/></svg></button>
+</div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide')),i=0;
+  var stage=document.getElementById('stage'),canvas=document.getElementById('canvas'),nav=document.getElementById('nav'),count=document.getElementById('count');
+  function fit(){
+    var navH=nav.style.display==='none'?0:64;
+    var s=Math.min(window.innerWidth/1280,(window.innerHeight-navH-20)/720);
+    canvas.style.transform='scale('+s+')';
+    stage.style.width=1280*s+'px';stage.style.height=720*s+'px';
+  }
+  function show(n){
+    i=(n+slides.length)%slides.length;
+    slides.forEach(function(el,k){el.classList.toggle('on',k===i)});
+    count.textContent=(i+1)+' / '+slides.length;
+  }
+  document.getElementById('prev').onclick=function(){show(i-1)};
+  document.getElementById('next').onclick=function(){show(i+1)};
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight')show(i+1);
+    else if(e.key==='ArrowLeft')show(i-1);
+    else if(e.key==='h'||e.key==='H'){nav.style.display=nav.style.display==='none'?'flex':'none';fit();}
+  });
+  window.addEventListener('resize',fit);fit();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+[
+  {
+    "id": "tomato_leaf_curl_virus",
+    "title": "Tomato Yellow Leaf Curl Virus (TYLCV) & Whitefly Vector",
+    "crop": "Tomato (Solanum lycopersicum)",
+    "symptoms": "Upward curling, cupping, and crinkling of young upper leaves; stunted plant growth, thick leathery foliage, yellowing of leaf margins, and drastic drop in fruit set.",
+    "treatment": "1. Since viral infections have no direct chemical cure, immediately rogue (uproot) severely infected plants to prevent viral spread to nearby crops.\n2. Spray organic neem seed oil emulsion (5 ml pure cold-pressed neem oil + 2 ml liquid castile soap per 1 litre lukewarm water) early morning every 4 days to control whitefly vectors.\n3. Hang yellow sticky cards (15x20 cm) at canopy level (1 trap per 3 planters) to capture flying whiteflies.\n4. Apply wood ash dusted lightly on soil and foliage to deter sap-sucking pests.",
+    "prevention": "Use virus-tolerant cultivars (e.g., BARI Tomato-8, BARI Tomato-14). Install fine insect netting (40-50 mesh) over nursery beds. Keep rooftop clear of solanaceous weeds.",
+    "source": "BARI Rooftop Agriculture Manual & DAE Hort. Guide"
+  },
+  {
+    "id": "chilli_leaf_curl_complex",
+    "title": "Chilli Leaf Curl Complex (Murda Disease / Thrips & Mites)",
+    "crop": "Chilli / Pepper (Capsicum annuum)",
+    "symptoms": "Upward boat-shaped curling indicates thrips attack; downward inverted cup curling indicates yellow mite attack. Brittle, clustered small leaves, flower drop, and stunted chili nodes.",
+    "treatment": "1. For thrips (upward curl): Spray organic garlic-chilli extract (50g crushed garlic + 25g hot green chilli boiled in 1L water, filtered and diluted 1:5 with water) twice weekly.\n2. For mites (downward curl): Spray micronized wettable sulfur (2g per litre of water) or cold-pressed neem oil solution (5ml/L) focusing thoroughly on leaf undersides.\n3. Drench with diluted vermiwash (1:4 with water) as a foliar spray to boost plant immunity.",
+    "prevention": "Avoid planting chilli adjacent to old eggplants. Maintain adequate spacing (45 cm) between pots for cross-ventilation. Spray neem preventive oil once every 10 days.",
+    "source": "BARI Rooftop Vegetable Production Guide"
+  },
+  {
+    "id": "nitrogen_deficiency_general",
+    "title": "Vegetative Nitrogen (N) Deficiency & Bottom Leaf Chlorosis",
+    "crop": "All Rooftop Vegetables (Tomato, Brinjal, Gourd, Spinach)",
+    "symptoms": "Uniform pale yellowing starting from oldest lower leaves while upper leaves remain pale green; thin, spindly stems, slow stunted growth, and premature senescence.",
+    "treatment": "1. Top-dress container planters with 2-3 handfuls (200-300g) of well-cured vermicompost per 12-inch pot.\n2. Apply fermented mustard oil cake liquid (Khol pacha pani): ferment 100g mustard cake in 2L water for 5 days, dilute 1:10 with water until tea-colored, apply 250ml per container weekly.\n3. Spray 0.5% urea or compost tea foliar spray early in the morning for rapid greening.",
+    "prevention": "Incorporate 30% organic vermicompost in potting soil mix before planting. Replenish organic matter monthly during active vegetative growth.",
+    "source": "DAE Urban Gardening Soil & Fertilizer Handbook"
+  },
+  {
+    "id": "powdery_mildew_cucurbits",
+    "title": "Powdery Mildew (Podosphaera xanthii) on Cucurbit Vines",
+    "crop": "Bottle Gourd (Lau), Sweet Gourd, Cucumber, Bitter Gourd",
+    "symptoms": "White talcum-powder-like spots on upper leaf surfaces, expanding to cover whole leaves; leaves turn yellow, then brown and dry out like paper under warm dry rooftop winds.",
+    "treatment": "1. Spray organic baking soda solution: Mix 1 teaspoon (5g) sodium bicarbonate + 1/2 teaspoon liquid soap in 1 litre water; spray thoroughly every 5-7 days in late afternoon.\n2. Dilute milk spray: 1 part raw cow milk to 9 parts water sprayed during morning sunlight acts as a potent natural antiseptic.\n3. Prune severely encrusted lower canopy leaves to improve air movement.",
+    "prevention": "Ensure trellis netting allows 360-degree air circulation. Avoid wetting foliage when watering; water strictly at soil base. Space vines at least 60 cm apart on roof pergolas.",
+    "source": "BARI Plant Pathology Division Guidelines"
+  },
+  {
+    "id": "white_mealybugs_infestation",
+    "title": "Cottony White Mealybug Infestation & Black Sooty Mold",
+    "crop": "Rooftop Lemon (Kagzi Lebu), Guava, Hibiscus, Brinjal",
+    "symptoms": "Clusters of white, cotton-like waxy insects on leaf axils, fruit stems, and tender shoot tips; sticky transparent honeydew coating leaves, followed by black powdery sooty mold.",
+    "treatment": "1. Rubbing alcohol spot-dab: Dip a cotton swab or toothbrush in 70% isopropyl alcohol and wipe off visible mealybug clusters directly.\n2. High-pressure jet wash: Blast stems with a concentrated water jet nozzle in early morning to dislodge wax shields.\n3. Horticultural oil/soap spray: 5ml neem oil + 5ml dish soap per 1 litre lukewarm water, sprayed forcefully into bark crevices every 5 days for 3 cycles.\n4. Dust diatomaceous earth or wood ash around stem base to block ants that farm mealybugs.",
+    "prevention": "Eliminate black and red ants using sticky trunk barriers or turmeric-chalk rings. Inspect newly purchased saplings from nursery before introducing to roof.",
+    "source": "DAE Pest Management Compendium for Rooftop Orchards"
+  },
+  {
+    "id": "blossom_end_rot_tomato",
+    "title": "Blossom End Rot (BER) & Calcium Transport Deficit",
+    "crop": "Tomato, Bell Pepper, Eggplant",
+    "symptoms": "Water-soaked dark lesion appearing at the blossom end (bottom opposite stem) of green fruit, enlarging into a sunken, leathery black or dark brown crater. Foliage often looks healthy.",
+    "treatment": "1. Maintain consistent soil moisture; avoid fluctuating between bone-dry potting mix and waterlogged soil, which halts calcium uptake.\n2. Foliar calcium spray: Dissolve 2 grams of agricultural gypsum or calcium chloride per 1 litre water and spray foliage and young fruit clusters weekly.\n3. Add finely crushed eggshell powder (boiled in vinegar and diluted 1:20) or quicklime/slaked lime water (1g per 2L water) around the root zone.",
+    "prevention": "Mulch container surface with 2 inches of coco peat or rice husk to preserve root moisture stability. Use minimum 12-inch deep containers for tomatoes.",
+    "source": "BARI Horticulture Department Field Manual"
+  },
+  {
+    "id": "red_spider_mites_brinjal",
+    "title": "Red Spider Mite (Tetranychus urticae) Outbreak",
+    "crop": "Brinjal (Eggplant), Chilli, Marigold, Tomato",
+    "symptoms": "Fine pale yellow or bronze speckling (stippling) on upper leaf surface; delicate silky spider webbing visible between petioles; leaves bronze, dry out, and drop prematurely in hot, dry weather.",
+    "treatment": "1. Mist underside of foliage daily with cold water, as spider mites thrive exclusively in dry, dusty microclimates.\n2. Spray wettable sulfur powder (2g per litre of water) or neem oil emulsion (5ml neem + 2ml liquid soap / L) in late afternoon. Ensure complete underside coverage.\n3. Prune and bag heavily webbed branch tips before disposing.",
+    "prevention": "Maintain ambient rooftop humidity with companion marigold and mint borders. Avoid excessive nitrogen fertilization which makes sap tender and attractive to mites.",
+    "source": "BARI Entomology Factsheet #12"
+  },
+  {
+    "id": "root_rot_overwatering",
+    "title": "Container Root Rot (Pythium / Phytophthora) & Waterlogging",
+    "crop": "All Rooftop Plants, Citrus, Herbs, Succulents",
+    "symptoms": "Midday wilting despite damp or wet soil; yellowing and limp dropping of leaves; foul swampy odor from drainage holes; roots appear dark brown, mushy, and slough off easily when touched.",
+    "treatment": "1. Immediately withhold all irrigation and elevate container on terracotta feet or bricks to ensure drainage holes are completely unblocked.\n2. Drench root zone with bio-fungicide: Trichoderma harzianum formulation (5g per litre of water) or Copper Oxychloride 50 WP (2g per litre water).\n3. Carefully repot if severe: trim rotting black roots with sterilized shears, dust root ball with cinnamon powder or wood ash, and replant in well-draining sandy loam mix.",
+    "prevention": "Use potting mix with 40% soil, 30% vermicompost, 20% coco-peat, and 10% coarse sand/perlite. Always verify pot has 3+ unobstructed bottom drainage holes.",
+    "source": "DAE Rooftop Potting & Container Drainage Manual"
+  },
+  {
+    "id": "citrus_leaf_miner_canker",
+    "title": "Citrus Leaf Miner (Phyllocnistis citrella) & Canker Blight",
+    "crop": "Lemon (Kagzi Lebu, Elachi Lebu, Malta)",
+    "symptoms": "Silvery serpentine winding tunnels on tender young lemon leaves; leaves curl, distort, and harden; corky, raised brown pustules with yellow halos on leaves, twigs, and fruit (Bacterial Canker).",
+    "treatment": "1. Leaf Miner: Hand-crush visible larvae inside translucent leaf mines. Spray neem oil (5ml/L) or spinosad bio-insecticide (1ml/L) when new flush of leaves begins.\n2. Citrus Canker: Prune infected twigs during dry weather. Spray Copper Oxychloride (2.5g/L) or Bordeaux mixture (1%) after each monsoon shower to prevent bacterial spread.\n3. Spray Streptocycline antibiotic (0.1g per litre water) mixed with copper fungicide for severe nursery canker.",
+    "prevention": "Do not prune or handle citrus foliage when wet. Apply protective copper spray during new shoot flushes in March and October.",
+    "source": "BARI Citrus Research Station Technical Bulletin"
+  },
+  {
+    "id": "iron_chlorosis_lemon",
+    "title": "Iron (Fe) & Micronutrient Chlorosis in Alkaline Rooftop Soil",
+    "crop": "Lemon, Lime, Pomegranate, Rose",
+    "symptoms": "Striking yellowing of young leaves where leaf veins remain sharply dark green (interveinal chlorosis); leaf size diminishes; in severe cases, young leaves turn ivory white and scorch at edges.",
+    "treatment": "1. Apply chelated iron (Fe-EDDHA or Fe-EDTA): Dissolve 2-3g per 1 litre of water and drench container soil around perimeter once every 14 days.\n2. Foliar iron spray: Dissolve 1g Ferrous Sulphate + 0.5g citric acid (or 1 tsp lemon juice) in 1L water; spray foliage early morning.\n3. Lower container pH: Add 2 tablespoons of diluted white vinegar or tea leaf compost per pot to unlock bound soil iron.",
+    "prevention": "Avoid using masonry lime or tap water with high alkalinity. Incorporate acidic organic leaf mold and decomposed cow dung in potting medium.",
+    "source": "DAE Urban Soil Fertility Management Sheet"
+  },
+  {
+    "id": "fruit_fly_gourds",
+    "title": "Bactrocera Fruit Fly (Curcurbit Fly) & Larval Puncture",
+    "crop": "Bottle Gourd, Ridge Gourd, Sweet Gourd, Bitter Gourd",
+    "symptoms": "Tiny resinous amber drop oozing from young female fruit; fruit turns yellow, curves into deformed banana shape, rots prematurely, and drops. Inside contains small white maggots.",
+    "treatment": "1. Install cue-lure pheromone traps (BARI Pheromone Trap): Hang 1 trap per 100 sq ft pergola 30 cm above crop canopy to attract and drown male flies in soapy water.\n2. Protective bag wrapping: Enclose pollinated female fruits with breathable brown paper bags or non-woven fabric bags immediately after flower petals close.\n3. Poison bait spray: Mix 20g mashed ripe banana + 2 drops malathion or neem extract; place in small shallow earthen cups hung near trellis.",
+    "prevention": "Destroy fallen infested gourds in boiling water or seal in airtight plastic bags under sun; never toss them into open rooftop compost bins.",
+    "source": "BARI Integrated Pest Management (IPM) Guide"
+  },
+  {
+    "id": "damping_off_seedlings",
+    "title": "Seedling Damping-Off & Crown Rot (Pythium / Rhizoctonia)",
+    "crop": "Tomato, Chilli, Brinjal, Cabbage, Cauliflower Seedlings",
+    "symptoms": "Water-soaked dark constriction at soil level on seedling stems; young seedlings suddenly topple over and collapse in circular patches; seeds rot before emerging from seed tray.",
+    "treatment": "1. Immediately reduce seed tray watering and move seed trays into bright, warm, ventilated filtered sunlight.\n2. Drench seedling medium with Trichoderma viride formulation (5g/L) or Carbendazim (1g/L).\n3. Carefully discard collapsed seedlings along with 2 cm surrounding potting soil to stop mycelial spread.",
+    "prevention": "Always solarize potting soil under black plastic in rooftop heat for 10 days before seeding. Never over-sow seeds too densely. Water seeds with clean lukewarm water.",
+    "source": "BARI Horticulture Nursery Manual"
+  },
+  {
+    "id": "aphids_mint_coriander",
+    "title": "Aphid Clusters & Sooty Honeydew on Culinary Herbs",
+    "crop": "Mint (Pudina), Coriander (Dhania), Spinach (Palak)",
+    "symptoms": "Dense clusters of soft-bodied green, yellow, or black aphids on tender stem tips and underside of leaves; leaves curl, look stunted and sticky; attended by black ants.",
+    "treatment": "1. Mild soapy spray: Mix 1 teaspoon (5ml) organic liquid dish soap in 1 litre water; spray directly on aphid colonies to dissolve their protective coating.\n2. Wood ash dusting: Sift cold wood ash through a fine sieve over damp foliage early in the morning.\n3. Companion planting: Plant garlic cloves or marigolds directly in the same container to naturally repel aphids with volatile scents.",
+    "prevention": "Prune overgrown mint regularly to encourage fresh ventilation. Keep container edges wiped clean of sugar traces and ant trails.",
+    "source": "DAE Urban Kitchen Garden Leaflet"
+  },
+  {
+    "id": "magnesium_deficiency_fruiting",
+    "title": "Magnesium (Mg) Deficiency in Container Citrus & Solanaceae",
+    "crop": "Lemon, Tomato, Eggplant, Guava",
+    "symptoms": "Inverted green V-shaped triangle remains at leaf base while outer margins and interveinal areas turn golden yellow on older leaves; fruit maturation is delayed; leaves drop prematurely.",
+    "treatment": "1. Epsom salt foliar spray: Dissolve 1 tablespoon (10g) Magnesium Sulphate (Epsom salt) in 1 litre of water; spray foliage once every 10 days during active fruiting.\n2. Soil application: Dissolve 15g Epsom salt in 2 litres water and drench root perimeter of 14-inch container once a month.\n3. Top-dress with wood ash and compost to balance potassium-magnesium ratio.",
+    "prevention": "Avoid over-applying high-potassium fertilizers without supplementary magnesium in container environments.",
+    "source": "BARI Soil Science Division Circular"
+  },
+  {
+    "id": "bacterial_wilt_solanaceae",
+    "title": "Bacterial Wilt (Ralstonia solanacearum) in Solanaceous Crops",
+    "crop": "Eggplant (Brinjal), Tomato, Potato",
+    "symptoms": "Rapid, sudden daytime wilting of entire plant while leaves remain green (green wilt); vascular browning inside stem vascular bundles; milky bacterial streaming visible in clear water test.",
+    "treatment": "1. Cut stem test: Cut stem at base and submerge in clear glass of water—milky white bacterial threads streaming out within 2 minutes confirms bacterial wilt.\n2. Rogueing: Immediately remove diseased plant with its entire root ball and potting soil; do not compost this soil.\n3. Soil sterilization: Sun-bake or solarize the container and replace soil completely; treat new potting mix with Trichoderma bio-agent (10g per pot).",
+    "prevention": "Plant wilt-resistant cultivars (e.g., BARI Begun-8, BARI Begun-10). Avoid root injuries when transplanting. Disinfect gardening pruners with 10% bleach solution.",
+    "source": "BARI Plant Pathology Technical Guide"
+  },
+  {
+    "id": "potassium_deficiency_leaf_scorch",
+    "title": "Potassium (K) Deficiency & Marginal Leaf Scorch",
+    "crop": "Tomato, Pepper, Papaya, Banana",
+    "symptoms": "Marginal chlorosis followed by dry brown scorching (firing) along outer edges of older leaves; weak stems unable to support fruit weight; uneven fruit ripening with yellow shoulders.",
+    "treatment": "1. Apply banana peel tea: Soak 4 fresh chopped banana peels in 1 litre water for 48 hours; strain and apply 250ml liquid per container weekly for potent organic potassium.\n2. Wood ash dressing: Lightly work 2 tablespoons of sifted hardwood ash into the top 2 inches of soil and water thoroughly.\n3. Organic MOP: Dissolve 2g Potassium sulphate or organic kelp meal per litre of water and water pot thoroughly.",
+    "prevention": "Mix wood ash or composted farmyard manure into container soil mix before planting fruiting perennials.",
+    "source": "DAE Urban Fruit Tree Care Standard"
+  },
+  {
+    "id": "organic_neem_spray_protocol",
+    "title": "BARI Standard Organic Neem Oil Emulsion Preparation",
+    "crop": "All Rooftop Garden Vegetables, Fruits, & Ornamentals",
+    "symptoms": "Standard preventive and curative protocol for sap-sucking pests (aphids, jassids, thrips, whiteflies, scale, and early fungal spores).",
+    "treatment": "Formula per 1 Litre of Spray:\n1. 5 ml pure cold-pressed neem oil (Azadirachtin content minimum 1500 ppm).\n2. 2 ml liquid castile soap or mild baby shampoo as emulsifier.\n3. Mix soap in 100ml lukewarm water until foamy, then vigorously shake in neem oil until uniform milky white emulsion forms.\n4. Dilute with remaining 900ml water and spray within 4 hours.\n5. Application: Spray late afternoon (after 4:30 PM) to prevent UV degradation and protect daytime honeybees.",
+    "prevention": "Apply preventive neem spray every 10–14 days throughout the growing season to disrupt insect molting and oviposition.",
+    "source": "BARI Bio-Pesticide Standard Operating Protocol"
+  },
+  {
+    "id": "rooftop_container_watering_heat",
+    "title": "Rooftop Heat Island Stress & Deep Watering Rules",
+    "crop": "All Container Plants on Concrete Rooftops",
+    "symptoms": "Severe midday wilt, scorched leaf tips, baked dry soil pulling away from container edges, stunted fruits, and blossom drop caused by concrete thermal radiation (40°C+ surface temp).",
+    "treatment": "1. Deep morning watering: Water deeply before 8:00 AM until water emerges from bottom drainage tray, ensuring complete root ball hydration.\n2. Organic surface mulching: Spread a 2 to 3-inch layer of dried coconut coir, straw, or wood shavings on container topsoil to reduce soil evaporation by 60%.\n3. Container elevation: Place pots on wooden pallets or clay pot-feet so concrete heat does not conduct directly into potting soil.\n4. Shade mesh: Erect a 35% agricultural shade net 7 feet above planters during peak April–June heatwaves.",
+    "prevention": "Group containers close together to create an evaporative microclimate. Paint black plastic containers white or wrap with jute burlap bags.",
+    "source": "DAE Urban Climate Adaptation & Rooftop Farming Manual"
+  }
+]

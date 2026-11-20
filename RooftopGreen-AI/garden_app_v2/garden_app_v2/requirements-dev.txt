@@ -1,0 +1,6 @@
+-r requirements.txt
+pytest
+playwright
+# only on the machine that generates plant sprites (not for hosting):
+# mflux
+# huggingface_hub[cli]

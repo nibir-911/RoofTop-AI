@@ -1,0 +1,194 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  html,body{margin:0;padding:0;background:transparent;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+  #wrap{position:relative;width:100%}
+  canvas{display:block;width:100%;touch-action:none;cursor:crosshair;border-radius:6px;outline:none}
+  #bar{font-size:13px;line-height:1.35;padding:6px 2px 2px;color:#3b3b3b;min-height:18px}
+  #bar b{color:#111}
+  @media (prefers-color-scheme: dark){#bar{color:#ddd}#bar b{color:#fff}}
+</style></head>
+<body>
+<div id="wrap"><canvas id="cv" tabindex="0"></canvas></div>
+<div id="bar"></div>
+<script>
+"use strict";
+const cv = document.getElementById("cv"), ctx = cv.getContext("2d"), bar = document.getElementById("bar");
+const S = {args: null, img: new Image(), imgId: null, pts: [], drawing: false, mouse: null, ready: false, tool: null};
+
+function post(type, extra){ window.parent.postMessage(Object.assign({isStreamlitMessage: true, type: type}, extra || {}), "*"); }
+function setHeight(){ post("streamlit:setFrameHeight", {height: cv.clientHeight + 44}); }
+
+window.addEventListener("message", function(ev){
+  if(ev.data && ev.data.type === "streamlit:render"){ onRender(ev.data.args); }
+});
+post("streamlit:componentReady", {apiVersion: 1});
+
+function onRender(args){
+  const toolChanged = S.args && S.args.tool !== args.tool;
+  S.args = args;
+  if(toolChanged){ S.pts = []; S.drawing = false; }
+  if(args.image_id !== S.imgId){
+    S.imgId = args.image_id; S.ready = false;
+    S.img = new Image();
+    S.img.onload = function(){ S.ready = true; layout(); draw(); };
+    S.img.src = args.image;
+  } else { layout(); draw(); }
+}
+function layout(){
+  if(!S.ready) return;
+  const w = Math.max(200, document.getElementById("wrap").clientWidth);
+  const h = Math.round(w * S.img.naturalHeight / S.img.naturalWidth);
+  if(cv.width !== w || cv.height !== h){ cv.width = w; cv.height = h; }
+  setHeight();
+}
+function k(){ return cv.width / S.img.naturalWidth; }          // image px -> canvas px
+function toImg(ev){
+  const r = cv.getBoundingClientRect();
+  return [(ev.clientX - r.left) / r.width * S.img.naturalWidth, (ev.clientY - r.top) / r.height * S.img.naturalHeight];
+}
+
+// ---------- the same selection rule as paint.py (cell centre inside the shape) ----------
+function cellRect(info, g, r, c){
+  const cell = g * info.ppf, X0 = info.floor_x0, Y0 = info.floor_y0;
+  return [X0 + Math.trunc(c * cell), Y0 + Math.trunc(r * cell),
+          Math.min(X0 + Math.trunc((c + 1) * cell), X0 + info.floor_w), Math.min(Y0 + Math.trunc((r + 1) * cell), Y0 + info.floor_h)];
+}
+function distSeg(px, py, a, b){
+  const dx = b[0] - a[0], dy = b[1] - a[1], l2 = dx * dx + dy * dy;
+  let t = l2 ? ((px - a[0]) * dx + (py - a[1]) * dy) / l2 : 0; t = Math.max(0, Math.min(1, t));
+  return Math.hypot(px - (a[0] + t * dx), py - (a[1] + t * dy));
+}
+function inPoly(px, py, P){
+  let ins = false;
+  for(let i = 0, j = P.length - 1; i < P.length; j = i++){
+    if(((P[i][1] > py) !== (P[j][1] > py)) && (px < (P[j][0] - P[i][0]) * (py - P[i][1]) / (P[j][1] - P[i][1]) + P[i][0])) ins = !ins;
+  }
+  return ins;
+}
+function currentShape(){
+  const a = S.args, p = S.pts.slice();
+  if(!p.length) return null;
+  const m = S.mouse;
+  if(a.tool === "brush") return {tool: "brush", points: p};
+  if(a.tool === "lasso") return p.length >= 3 ? {tool: "lasso", points: p} : null;
+  if(a.tool === "polygon"){ const q = p.slice(); if(m) q.push(m); return q.length >= 3 ? {tool: "polygon", points: q} : null; }
+  if(a.tool === "rect" || a.tool === "circle"){ const e = m || p[0]; return {tool: a.tool, points: [p[0], e]}; }
+  return null;
+}
+function inside(shape, x, y){
+  const a = S.args, P = shape.points;
+  if(shape.tool === "brush"){
+    const r = a.radius_ft * a.info.ppf;
+    if(P.length === 1) return Math.hypot(x - P[0][0], y - P[0][1]) <= r;
+    for(let i = 0; i < P.length - 1; i++) if(distSeg(x, y, P[i], P[i + 1]) <= r) return true;
+    return false;
+  }
+  if(shape.tool === "lasso" || shape.tool === "polygon") return inPoly(x, y, P);
+  if(shape.tool === "rect"){ const x0 = Math.min(P[0][0], P[1][0]), x1 = Math.max(P[0][0], P[1][0]), y0 = Math.min(P[0][1], P[1][1]), y1 = Math.max(P[0][1], P[1][1]); return x >= x0 && x <= x1 && y >= y0 && y <= y1; }
+  if(shape.tool === "circle") return Math.hypot(x - P[0][0], y - P[0][1]) <= Math.hypot(P[1][0] - P[0][0], P[1][1] - P[0][1]);
+  return false;
+}
+function previewCells(shape){
+  const a = S.args, info = a.info, g = a.grid_ft, cell = g * info.ppf;
+  const cols = Math.ceil(info.floor_w / cell - 1e-9), rows = Math.ceil(info.floor_h / cell - 1e-9);
+  const out = [];
+  for(let r = 0; r < rows; r++) for(let c = 0; c < cols; c++){
+    const q = cellRect(info, g, r, c), cx = Math.floor((q[0] + q[2]) / 2), cy = Math.floor((q[1] + q[3]) / 2);
+    if(inside(shape, cx, cy)) out.push(q);
+  }
+  return out;
+}
+
+function draw(){
+  if(!S.ready || !S.args) return;
+  const a = S.args, info = a.info, s = k(), g = a.grid_ft, cell = g * info.ppf;
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  ctx.drawImage(S.img, 0, 0, cv.width, cv.height);
+
+  // small + marks at every grid corner: they show how big 2 ft is without hiding the picture
+  const cols = Math.ceil(info.floor_w / cell - 1e-9), rows = Math.ceil(info.floor_h / cell - 1e-9);
+  const arm = Math.max(2.5, Math.min(5, cell * s * 0.12));
+  ctx.lineCap = "round";
+  for(let r = 0; r <= rows; r++) for(let c = 0; c <= cols; c++){
+    const x = (info.floor_x0 + Math.min(c * cell, info.floor_w)) * s, y = (info.floor_y0 + Math.min(r * cell, info.floor_h)) * s;
+    ctx.strokeStyle = "rgba(0,0,0,.55)"; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(x - arm, y); ctx.lineTo(x + arm, y); ctx.moveTo(x, y - arm); ctx.lineTo(x, y + arm); ctx.stroke();
+    ctx.strokeStyle = "rgba(255,255,255,.95)"; ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.moveTo(x - arm, y); ctx.lineTo(x + arm, y); ctx.moveTo(x, y - arm); ctx.lineTo(x, y + arm); ctx.stroke();
+  }
+  // 10 ft scale bar
+  const bl = 10 * info.ppf * s, bx = 14, by = cv.height - 16;
+  ctx.fillStyle = "rgba(255,255,255,.85)"; ctx.fillRect(bx - 6, by - 20, bl + 12, 30);
+  ctx.strokeStyle = "#222"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx + bl, by); ctx.moveTo(bx, by - 4); ctx.lineTo(bx, by + 4); ctx.moveTo(bx + bl, by - 4); ctx.lineTo(bx + bl, by + 4); ctx.stroke();
+  ctx.fillStyle = "#222"; ctx.font = "12px system-ui"; ctx.fillText("10 ft", bx + 4, by - 7);
+
+  // live preview of the cells the current shape would mark
+  const shape = currentShape();
+  let n = 0, area = 0;
+  if(shape){
+    const col = a.color, cells = previewCells(shape);
+    ctx.fillStyle = "rgba(" + col[0] + "," + col[1] + "," + col[2] + ",.50)";
+    for(const q of cells){ ctx.fillRect(q[0] * s, q[1] * s, (q[2] - q[0]) * s, (q[3] - q[1]) * s); area += (q[2] - q[0]) * (q[3] - q[1]) / (info.ppf * info.ppf); n++; }
+    ctx.strokeStyle = "rgba(" + col[0] + "," + col[1] + "," + col[2] + ",.95)"; ctx.lineWidth = 2;
+    if(shape.tool === "brush" || shape.tool === "lasso" || shape.tool === "polygon"){
+      ctx.beginPath(); shape.points.forEach(function(p, i){ i ? ctx.lineTo(p[0] * s, p[1] * s) : ctx.moveTo(p[0] * s, p[1] * s); });
+      if(shape.tool !== "brush") ctx.closePath(); ctx.stroke();
+    } else if(shape.tool === "rect"){
+      const P = shape.points; ctx.strokeRect(Math.min(P[0][0], P[1][0]) * s, Math.min(P[0][1], P[1][1]) * s, Math.abs(P[1][0] - P[0][0]) * s, Math.abs(P[1][1] - P[0][1]) * s);
+    } else if(shape.tool === "circle"){
+      const P = shape.points; ctx.beginPath(); ctx.arc(P[0][0] * s, P[0][1] * s, Math.hypot(P[1][0] - P[0][0], P[1][1] - P[0][1]) * s, 0, 6.2832); ctx.stroke();
+    }
+  }
+  // brush cursor = circle of the real brush size
+  if(S.mouse && a.tool === "brush"){
+    ctx.strokeStyle = "#fff"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(S.mouse[0] * s, S.mouse[1] * s, a.radius_ft * info.ppf * s, 0, 6.2832); ctx.stroke();
+    ctx.strokeStyle = "#111"; ctx.lineWidth = 1.2; ctx.stroke();
+  } else if(S.mouse){
+    ctx.strokeStyle = "#111"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(S.mouse[0] * s - 8, S.mouse[1] * s); ctx.lineTo(S.mouse[0] * s + 8, S.mouse[1] * s); ctx.moveTo(S.mouse[0] * s, S.mouse[1] * s - 8); ctx.lineTo(S.mouse[0] * s, S.mouse[1] * s + 8); ctx.stroke();
+  }
+  const hints = {brush: "drag to paint (radius " + a.radius_ft + " ft)", lasso: "drag a loop; it closes when you let go", polygon: "click corners; double-click or click the first point to finish; Esc cancels", rect: "drag a rectangle", circle: "drag from the centre outwards"};
+  bar.innerHTML = "<b>" + a.label + "</b> · " + a.tool + ": " + hints[a.tool] + (shape ? " &nbsp;|&nbsp; <b id='cnt'>" + n + " cells · " + area.toFixed(0) + " sq ft</b>" : "") + "<br>+ marks are " + g + " ft apart";
+}
+
+function commit(shape){
+  S.pts = []; S.drawing = false;
+  post("streamlit:setComponentValue", {dataType: "json", value: {nonce: Math.random().toString(36).slice(2), tool: shape.tool, radius_ft: S.args.radius_ft, points: shape.points}});
+  draw();
+}
+function polygonDone(){
+  const P = []; S.pts.forEach(function(p){ if(!P.length || Math.hypot(p[0] - P[P.length - 1][0], p[1] - P[P.length - 1][1]) > 3) P.push(p); });
+  if(P.length >= 3) commit({tool: "polygon", points: P}); else { S.pts = []; draw(); }
+}
+cv.addEventListener("pointerdown", function(ev){
+  if(!S.ready || !S.args) return; cv.focus();
+  const p = toImg(ev), t = S.args.tool;
+  if(t === "polygon"){
+    if(S.pts.length >= 3 && Math.hypot(p[0] - S.pts[0][0], p[1] - S.pts[0][1]) * k() < 12){ polygonDone(); return; }
+    S.pts.push(p);
+  } else { S.drawing = true; S.pts = [p]; cv.setPointerCapture(ev.pointerId); }
+  draw();
+});
+cv.addEventListener("pointermove", function(ev){
+  if(!S.ready || !S.args) return;
+  const p = toImg(ev); S.mouse = p;
+  if(S.drawing && (S.args.tool === "brush" || S.args.tool === "lasso")){
+    const l = S.pts[S.pts.length - 1]; if(Math.hypot(p[0] - l[0], p[1] - l[1]) * k() >= 2) S.pts.push(p);
+  }
+  draw();
+});
+cv.addEventListener("pointerup", function(ev){
+  if(!S.drawing) return; S.drawing = false;
+  const p = toImg(ev), t = S.args.tool;
+  if(t === "brush"){ if(S.pts.length === 1) S.pts.push([p[0] + 0.01, p[1]]); commit({tool: "brush", points: S.pts}); }
+  else if(t === "lasso"){ if(S.pts.length >= 3) commit({tool: "lasso", points: S.pts}); else { S.pts = []; draw(); } }
+  else if(t === "rect" || t === "circle"){ if(Math.hypot(p[0] - S.pts[0][0], p[1] - S.pts[0][1]) > 2) commit({tool: t, points: [S.pts[0], p]}); else { S.pts = []; draw(); } }
+});
+cv.addEventListener("dblclick", function(){ if(S.args && S.args.tool === "polygon") polygonDone(); });
+cv.addEventListener("pointerleave", function(){ if(!S.drawing){ S.mouse = null; draw(); } });
+cv.addEventListener("keydown", function(ev){
+  if(ev.key === "Escape"){ S.pts = []; S.drawing = false; draw(); }
+  if(ev.key === "Enter" && S.args && S.args.tool === "polygon") polygonDone();
+});
+window.addEventListener("resize", function(){ layout(); draw(); });
+</script></body></html>

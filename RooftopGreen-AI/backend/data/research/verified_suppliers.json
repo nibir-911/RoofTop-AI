@@ -1,0 +1,67 @@
+[
+  {
+    "id": "sup_mirpur_green",
+    "name": "Green Dhaka Nursery, Mirpur",
+    "category": "Nursery & Live Plants",
+    "area": "Mirpur-1, Dhaka",
+    "contact": "+880 1711-234567",
+    "verified": true,
+    "supplier_type": "Verified Agro Nursery",
+    "product_categories": "Grafted Fruit Trees, Indoor Flowers, Bonsai, Drums",
+    "website_or_page": "https://greendhakanursery.com",
+    "source_url": "https://greendhakanursery.com",
+    "notes": "Premier horticulture center with accredited BARI/DAE fruit varieties."
+  },
+  {
+    "id": "sup_agargaon_mart",
+    "name": "Agargaon Agri Mart",
+    "category": "Growing Media & Planters",
+    "area": "Agargaon, Dhaka",
+    "contact": "+880 1819-345678",
+    "verified": true,
+    "supplier_type": "Agricultural Superstore",
+    "product_categories": "Geotextile Bags, Potting Soil, Seeds, Fertilizers",
+    "website_or_page": "https://agargaonagri.com.bd",
+    "source_url": "https://agargaonagri.com.bd",
+    "notes": "Direct supplier of BADC/BARI certified seeds and light rooftop soils."
+  },
+  {
+    "id": "sup_farmgate_krishibid",
+    "name": "Krishibid Bazaar, Farmgate",
+    "category": "Fertilizers & Plant Health",
+    "area": "Farmgate, Dhaka",
+    "contact": "+880 1912-456789",
+    "verified": true,
+    "supplier_type": "Krishibid Cooperative Mart",
+    "product_categories": "Vermicompost, Biochar, Organic Fungicides, Tools",
+    "website_or_page": "https://krishibidbazaar.com",
+    "source_url": "https://krishibidbazaar.com",
+    "notes": "Run by agricultural university agronomists; 100% genuine inputs."
+  },
+  {
+    "id": "sup_dhanmondi_rooftop",
+    "name": "Dhanmondi Rooftop Solutions",
+    "category": "Engineering Planters & Drip Tech",
+    "area": "Dhanmondi, Dhaka",
+    "contact": "+880 1610-567890",
+    "verified": true,
+    "supplier_type": "Urban Rooftop Engineering",
+    "product_categories": "Planter Boxes, Automatic Drip Timers, Drainage Mats",
+    "website_or_page": "https://dhanmondirooftop.com",
+    "source_url": "https://dhanmondirooftop.com",
+    "notes": "Specialists in structural load mitigation and micro-drip automation."
+  },
+  {
+    "id": "sup_uttara_hub",
+    "name": "Uttara Plant Hub",
+    "category": "Smart Gardening Tools & Sensors",
+    "area": "Uttara Sector 7, Dhaka",
+    "contact": "+880 1715-678901",
+    "verified": true,
+    "supplier_type": "Modern Urban Garden Hub",
+    "product_categories": "Soil Meters, Misting Kits, Vertical Planters, Herbs",
+    "website_or_page": "https://uttaraplant.com",
+    "source_url": "https://uttaraplant.com",
+    "notes": "Leading provider of electronic gardening accessories and sensor probes."
+  }
+]

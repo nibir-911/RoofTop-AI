@@ -1,0 +1,233 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#cfe6f5;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+  #c{width:100%;height:100%;display:block;touch-action:none}
+  .hud{position:absolute;color:#1d1d1d;background:rgba(255,255,255,.86);border-radius:8px;padding:6px 10px;font-size:13px;line-height:1.35}
+  #legend{left:10px;top:10px}
+  #compass{right:10px;top:10px;width:58px;height:58px;padding:0}
+  #hourbox{left:10px;bottom:10px;display:flex;gap:8px;align-items:center}
+  #note{right:10px;bottom:10px;font-size:12px}
+  #err{left:10px;top:60px;color:#a00;display:none}
+  input[type=range]{width:170px}
+</style>
+<script type="importmap">{"imports":{"three":"./three.module.min.js"}}</script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="legend" class="hud"></div>
+<div id="compass" class="hud"><svg id="needle" viewBox="-30 -30 60 60" width="58" height="58">
+  <circle r="26" fill="none" stroke="#999" stroke-width="1"/>
+  <g id="ng"><polygon points="0,-22 5,4 -5,4" fill="#d32f2f"/><polygon points="0,22 5,-4 -5,-4" fill="#888"/><text x="-4" y="-24" font-size="10" fill="#d32f2f" font-weight="700" transform="translate(0,-2)">N</text></g>
+</svg></div>
+<div id="hourbox" class="hud"><span>Sun time</span><input id="hr" type="range" min="6" max="18" step="0.25" value="10"><b id="hrlab"></b><span id="suninfo"></span></div>
+<div id="note" class="hud">Illustrative impression, not to scale · drag to rotate · scroll to zoom</div>
+<div id="err" class="hud"></div>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from './OrbitControls.js';
+
+const cvs = document.getElementById('c');
+function post(type, extra){ window.parent.postMessage(Object.assign({isStreamlitMessage: true, type: type}, extra || {}), '*'); }
+let A = null, sceneId = null, ctx3 = null;
+
+window.addEventListener('message', function(ev){
+  if(ev.data && ev.data.type === 'streamlit:render'){
+    A = ev.data.args;
+    post('streamlit:setFrameHeight', {height: A.height || 560});
+    if(A.scene_id !== sceneId){ sceneId = A.scene_id; try{ build(A.scene); }catch(e){ showErr(e); } }
+  }
+});
+post('streamlit:componentReady', {apiVersion: 1});
+function showErr(e){ const d = document.getElementById('err'); d.style.display = 'block'; d.textContent = '3D error: ' + (e && e.message ? e.message : e); console.error(e); }
+
+const renderer = new THREE.WebGLRenderer({canvas: cvs, antialias: true, preserveDrawingBuffer: true});
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40, 1, 0.5, 600);
+const controls = new OrbitControls(camera, cvs);
+controls.enableDamping = true; controls.maxPolarAngle = Math.PI * 0.49;
+let root = null, sun = null, hemi = null, scn = null;
+
+// ---------- helpers ----------
+const loader = new THREE.TextureLoader();
+function tex(url, repeat){ const t = loader.load(url); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; if(repeat){ t.wrapS = t.wrapT = THREE.RepeatWrapping; } return t; }
+function P(x, y, z){ return new THREE.Vector3(x, z, -y); }                         // plan (x,y,height) -> three
+function rng(seed){ let a = seed >>> 0; return function(){ a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function rgb(c){ return new THREE.Color(c[0] / 255, c[1] / 255, c[2] / 255); }
+function concreteTex(){
+  const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d');
+  g.fillStyle = '#b9b9b4'; g.fillRect(0, 0, 256, 256);
+  const r = rng(7);
+  for(let i = 0; i < 5000; i++){ const v = 150 + Math.floor(r() * 70); g.fillStyle = 'rgba(' + v + ',' + v + ',' + (v - 4) + ',.35)'; g.fillRect(r() * 256, r() * 256, 2, 2); }
+  g.strokeStyle = 'rgba(80,80,80,.25)'; g.lineWidth = 1; for(let y = 64; y < 256; y += 64){ g.beginPath(); g.moveTo(0, y); g.lineTo(256, y); g.stroke(); }
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+function label(text, scale){
+  const c = document.createElement('canvas'); c.width = 512; c.height = 96; const g = c.getContext('2d');
+  g.fillStyle = 'rgba(255,255,255,.9)'; g.fillRect(0, 0, 512, 96); g.fillStyle = '#222'; g.font = 'bold 40px system-ui'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(text, 256, 50);
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({map: new THREE.CanvasTexture(c), depthTest: false, transparent: true}));
+  s.scale.set(scale, scale * 96 / 512, 1); s.renderOrder = 10; return s;
+}
+function mat(color, extra){ return new THREE.MeshStandardMaterial(Object.assign({color: color, roughness: .9, metalness: 0}, extra || {})); }
+function shadowed(m, cast, recv){ m.castShadow = cast !== false; m.receiveShadow = recv !== false; return m; }
+
+// ---------- sun ----------
+const CUM = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+function solar(lat, month, hour){
+  const n = CUM[month - 1] + 15, dec = 23.45 * Math.sin((360 / 365 * (284 + n)) * Math.PI / 180) * Math.PI / 180;
+  const phi = lat * Math.PI / 180, H = 15 * (hour - 12) * Math.PI / 180;
+  const alt = Math.asin(Math.max(-1, Math.min(1, Math.sin(phi) * Math.sin(dec) + Math.cos(phi) * Math.cos(dec) * Math.cos(H))));
+  let az = Math.atan2(Math.sin(H), Math.cos(H) * Math.sin(phi) - Math.tan(dec) * Math.cos(phi)) + Math.PI;
+  return {alt: alt * 180 / Math.PI, az: ((az * 180 / Math.PI) % 360 + 360) % 360};
+}
+function compassName(az){ return ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][Math.floor(((az + 22.5) % 360) / 45)]; }
+function updateSun(){
+  if(!scn) return;
+  const hr = parseFloat(document.getElementById('hr').value), s = solar(scn.lat, scn.month, hr);
+  const n = scn.north, e = [n[1], -n[0]], a = s.az * Math.PI / 180;
+  const d = [Math.sin(a) * e[0] + Math.cos(a) * n[0], Math.sin(a) * e[1] + Math.cos(a) * n[1]];
+  const ca = Math.cos(Math.max(s.alt, 0) * Math.PI / 180), sa = Math.sin(Math.max(s.alt, 0) * Math.PI / 180);
+  const t = new THREE.Vector3(scn.W / 2, 0, -scn.D / 2);
+  sun.position.set(t.x + d[0] * ca * 120, sa * 120 + 1, t.z - d[1] * ca * 120); sun.target.position.copy(t); sun.target.updateMatrixWorld();
+  const up = s.alt > 3; sun.intensity = up ? 2.2 : 0; hemi.intensity = up ? 0.75 : 0.35;
+  const h = Math.floor(hr), m = Math.round((hr - h) * 60);
+  document.getElementById('hrlab').textContent = String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+  document.getElementById('suninfo').textContent = up ? ('sun ' + Math.round(s.alt) + '° high, from the ' + compassName(s.az)) : 'sun is down';
+  scene.background = new THREE.Color(up ? 0xcfe6f5 : 0x28324a);
+}
+document.getElementById('hr').addEventListener('input', updateSun);
+
+// ---------- plants ----------
+function addPlant(p, g){
+  const k = scn.stage_k, z0 = p.level === 2 ? scn.diff : 0, X = p.x, Z = -p.y;
+  const r = rng(Math.round(p.x * 97 + p.y * 131 + 3));
+  const box = shadowed(new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.6, 1.6), mat(0xa0522d)));
+  box.position.set(X, z0 + 0.3, Z); g.add(box);
+  const soil = new THREE.Mesh(new THREE.BoxGeometry(1.44, 0.04, 1.44), mat(0x2b1d14)); soil.position.set(X, z0 + 0.6, Z); g.add(soil);
+  const base = z0 + 0.6, col = rgb(p.color), bloom = rgb(p.bloom);
+  const spr = p.sprite && scn.sprites[p.sprite];
+  const h = Math.max(Math.min(p.height, 8) * k, p.form === 'patch' ? 0.35 : 0.6);
+  const rad = Math.min(Math.max(p.canopy * Math.max(k, 0.45) / 2, 0.25), 0.85);
+  if(spr){
+    const t = loader.load(spr); t.colorSpace = THREE.SRGBColorSpace;
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({map: t, transparent: true, alphaTest: 0.05}));
+    s.scale.set(h * 0.8, h, 1); s.position.set(X, base + h / 2, Z); g.add(s); return;
+  }
+  function blob(rx, ry, rz, y, c){ const m = shadowed(new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), mat(c || col))); m.scale.set(rx, ry, rz); m.position.set(X, y, Z); g.add(m); return m; }
+  function dots(cx, cy, cz, rx, ry, n, c, sz){ for(let i = 0; i < n; i++){ const a = r() * 6.283, b = (r() - 0.2) * 2.0, d = new THREE.Mesh(new THREE.SphereGeometry(sz, 6, 5), mat(c)); d.position.set(cx + Math.cos(a) * rx * 0.95 * Math.cos(b * 0.6), cy + Math.sin(b * 0.6) * ry * 0.95, cz + Math.sin(a) * rx * 0.95 * Math.cos(b * 0.6)); g.add(d); } }
+  const pale = col.clone().multiplyScalar(1.25);
+  if(p.form === 'patch'){ blob(rad * 1.05, Math.max(h * 0.5, 0.18), rad * 1.05, base + h * 0.4); if(p.flowering && p.category === 'flower') dots(X, base + h * 0.5, Z, rad, h * 0.4, 8, bloom, 0.07); }
+  else if(p.form === 'climber'){
+    for(const dx of [-0.65, 0.65]){ const pole = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, h, 6), mat(0x8b6b3d))); pole.position.set(X + dx, base + h / 2, Z); g.add(pole); }
+    for(let j = 1; j < 4; j++){ const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 1.3, 5), mat(0x8b6b3d)); bar.rotation.z = Math.PI / 2; bar.position.set(X, base + h * j / 4, Z); g.add(bar); }
+    const n = Math.max(3, Math.round(9 * k));
+    for(let j = 0; j < n; j++){ const y = base + h * (0.15 + 0.8 * j / n); blob(0.38, 0.28, 0.2, y, j % 2 ? col : pale).position.x = X + ((j % 3) - 1) * 0.4; }
+    if(p.flowering && p.category === 'flower') dots(X, base + h * 0.6, Z, 0.7, h * 0.4, 10, bloom, 0.08);
+    if(p.category === 'vegetable' && k >= 0.65){ for(const dx of [-0.3, 0.3]){ const gd = shadowed(new THREE.Mesh(new THREE.SphereGeometry(1, 10, 8), mat(0xb7dfa0))); gd.scale.set(0.09, 0.4, 0.09); gd.position.set(X + dx, base + h * 0.45, Z + 0.1); g.add(gd); } }
+  }
+  else if(p.form === 'hanging'){
+    blob(rad, 0.3, rad, base + 0.25);
+    for(let j = -2; j <= 2; j++){ const len = 0.5 + 0.5 * k, st = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.02, len, 5), mat(0x3f9e5e))); st.position.set(X + j * 0.28, base - len / 2 + 0.2, Z + 0.82); g.add(st); if(p.flowering){ const d = new THREE.Mesh(new THREE.SphereGeometry(0.07, 6, 5), mat(bloom)); d.position.set(X + j * 0.28, base - len + 0.2, Z + 0.82); g.add(d); } }
+  }
+  else if(p.form === 'shrub'){
+    const tr = shadowed(new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.09, h * 0.5, 7), mat(0x6b4a2b))); tr.position.set(X, base + h * 0.25, Z); g.add(tr);
+    const cy = base + h * 0.72, ry = Math.max(rad * 1.0, h * 0.28); blob(rad * 1.15, ry, rad * 1.15, cy);
+    if(p.flowering || (p.category === 'fruit' && k >= 0.65)) dots(X, cy, Z, rad * 1.1, ry, 10, bloom, 0.09);
+  }
+  else if(p.form === 'succulent'){
+    for(let j = 0; j < 7; j++){ const a = j / 7 * 6.283, c = shadowed(new THREE.Mesh(new THREE.ConeGeometry(0.1, Math.max(h, 0.6), 6), mat(j % 2 ? col : pale))); c.position.set(X + Math.cos(a) * 0.22, base + Math.max(h, 0.6) / 2, Z + Math.sin(a) * 0.22); c.rotation.z = Math.cos(a) * 0.25; c.rotation.x = -Math.sin(a) * 0.25; g.add(c); }
+  }
+  else {  // bush
+    const hh = Math.max(h, 0.8), cy = base + hh * 0.5; blob(rad, Math.max(hh * 0.5, rad * 0.7), rad, cy);
+    if(p.flowering && p.category === 'flower') dots(X, cy, Z, rad, hh * 0.5, 16, bloom, 0.09);
+    else if((p.category === 'vegetable' || p.category === 'fruit') && k >= 0.65) dots(X, cy, Z, rad, hh * 0.5, 5, bloom, 0.08);
+    if(p.support){ const st = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, hh + 0.3, 5), mat(0x8b6b3d)); st.position.set(X + rad * 0.7, base + hh / 2, Z); g.add(st); }
+  }
+}
+
+// ---------- scene ----------
+function build(sc){
+  scn = sc;
+  if(root){ scene.remove(root); }
+  root = new THREE.Group(); scene.add(root);
+  const W = sc.W, D = sc.D, diff = sc.diff, rail = sc.rail;
+  const conc = concreteTex(); const concSide = conc.clone(); concSide.repeat.set(W / 8, 1); concSide.needsUpdate = true;
+  const sideMat = mat(0xffffff, {map: concSide});
+  const floorTex = sc.floor_tex ? tex(sc.floor_tex) : null;
+  if(floorTex){ floorTex.repeat.set(1 / W, 1 / D); floorTex.wrapS = floorTex.wrapT = THREE.ClampToEdgeWrapping; }
+  const topMat = mat(0xffffff, floorTex ? {map: floorTex} : {color: 0xb8b8b2});
+  const topMat2 = mat(0xf3f3ee, floorTex ? {map: floorTex} : {color: 0xcfcfc9});
+
+  function slab(poly, depth, topM, y){
+    const shp = new THREE.Shape(); poly.forEach(function(q, i){ i ? shp.lineTo(q[0], q[1]) : shp.moveTo(q[0], q[1]); }); shp.closePath();
+    const m = new THREE.Mesh(new THREE.ExtrudeGeometry(shp, {depth: depth, bevelEnabled: false}), [topM, sideMat]);
+    m.rotation.x = -Math.PI / 2; m.position.y = y; m.castShadow = true; m.receiveShadow = true; root.add(m); return m;
+  }
+  slab(sc.poly1, 1, topMat, -1);                                                       // lower roof slab (top at 0)
+  const body = shadowed(new THREE.Mesh(new THREE.BoxGeometry(W, 30, D), mat(0xd9d4c8)), false, true); body.position.set(W / 2, -16, -D / 2); root.add(body);
+  if(sc.block){ const b = sc.block; slab([[b[0], b[1]], [b[2], b[1]], [b[2], b[3]], [b[0], b[3]]], diff + 1, topMat2, -1); }   // higher block
+
+  // outer railings with the photographed strips
+  const rails = (sc.strips || []).map(function(u){ return u ? tex(u) : null; });
+  for(const sg of sc.segments){
+    const sp = sc.side_pts[sg.side], z0 = sg.level === 2 ? diff : 0;
+    const A0 = [sp[0][0] + (sp[1][0] - sp[0][0]) * sg.t0, sp[0][1] + (sp[1][1] - sp[0][1]) * sg.t0];
+    const B0 = [sp[0][0] + (sp[1][0] - sp[0][0]) * sg.t1, sp[0][1] + (sp[1][1] - sp[0][1]) * sg.t1];
+    const geo = new THREE.BufferGeometry();
+    const v = [P(A0[0], A0[1], z0), P(B0[0], B0[1], z0), P(B0[0], B0[1], z0 + rail), P(A0[0], A0[1], z0 + rail)];
+    geo.setFromPoints(v); geo.setIndex([0, 1, 2, 0, 2, 3]);
+    geo.setAttribute('uv', new THREE.Float32BufferAttribute([sg.t0, 0, sg.t1, 0, sg.t1, 1, sg.t0, 1], 2)); geo.computeVertexNormals();
+    const t = rails[sg.side - 1];
+    const m = new THREE.Mesh(geo, mat(0xffffff, t ? {map: t, side: THREE.DoubleSide} : {color: 0x9a9a95, side: THREE.DoubleSide})); m.castShadow = true; m.receiveShadow = true; root.add(m);
+  }
+  // low parapet along the higher block's inner edges (plain concrete)
+  for(const f of sc.faces){
+    const len = Math.hypot(f.p1[0] - f.p0[0], f.p1[1] - f.p0[1]), horiz = f.normal[0] === 0;
+    const m = shadowed(new THREE.Mesh(new THREE.BoxGeometry(horiz ? len : 0.4, rail, horiz ? 0.4 : len), sideMat));
+    const cx = (f.p0[0] + f.p1[0]) / 2 - f.normal[0] * 0.2, cy = (f.p0[1] + f.p1[1]) / 2 - f.normal[1] * 0.2; m.position.copy(P(cx, cy, diff + rail / 2)); root.add(m);
+  }
+  // doors and the outer stair
+  for(const o of sc.openings){
+    const nx = o.normal[0], ny = o.normal[1], horiz = ny !== 0, w = o.width;
+    if(o.kind === 'door'){
+      const d = shadowed(new THREE.Mesh(new THREE.BoxGeometry(horiz ? w : 0.15, 7, horiz ? 0.15 : w), mat(0x5a3a22))); d.position.copy(P(o.centre[0] + nx * 0.08, o.centre[1] + ny * 0.08, 3.5)); root.add(d);
+    } else {
+      const N = sc.stair_steps, rise = diff / N, run = sc.stair_run / N;
+      for(let i = 0; i < N; i++){
+        const hgt = rise * (i + 1), dist = sc.stair_run - run * (i + 0.5);
+        const st = shadowed(new THREE.Mesh(new THREE.BoxGeometry(horiz ? w : run, hgt, horiz ? run : w), mat(0x8e8e88)));
+        st.position.copy(P(o.centre[0] + nx * dist, o.centre[1] + ny * dist, hgt / 2)); root.add(st);
+      }
+    }
+  }
+  // planters and plants
+  const pg = new THREE.Group(); root.add(pg); sc.plants.forEach(function(p){ addPlant(p, pg); });
+  // labels
+  const l1 = label(sc.names[0], Math.max(W, D) * 0.32); l1.position.copy(P(W * 0.25, D * 0.12, 2.2)); if(!sc.block) l1.visible = false; root.add(l1);
+  if(sc.block){ const b = sc.block, l2 = label(sc.names[1] + ' (+' + diff + ' ft)', Math.max(W, D) * 0.34); l2.position.copy(P((b[0] + b[2]) / 2, (b[1] + b[3]) / 2, diff + 4)); root.add(l2); }
+
+  // light
+  scene.children.filter(function(c){ return c.isLight; }).forEach(function(c){ scene.remove(c); });
+  hemi = new THREE.HemisphereLight(0xffffff, 0x8a8a80, 0.75); scene.add(hemi);
+  sun = new THREE.DirectionalLight(0xfff3dc, 2.2); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+  const M = Math.max(W, D) * 0.95; Object.assign(sun.shadow.camera, {left: -M, right: M, top: M, bottom: -M, near: 1, far: 400}); sun.shadow.camera.updateProjectionMatrix();
+  sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.03; scene.add(sun); scene.add(sun.target);
+  document.getElementById('hr').value = sc.hour; updateSun();
+
+  const Mx = Math.max(W, D);
+  controls.target.set(W / 2, diff * 0.35, -D / 2); camera.position.set(W / 2 + Mx * 0.35, 1.25 * Mx + diff * 0.8, -D / 2 + 1.9 * Mx); controls.update();
+  document.getElementById('legend').innerHTML = '<b>' + sc.title + '</b><br>' + sc.legend.join('<br>');
+}
+
+function resize(){ const w = cvs.clientWidth, h = cvs.clientHeight; if(cvs.width !== w * devicePixelRatio || cvs.height !== h * devicePixelRatio){ renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); } }
+function animate(){
+  requestAnimationFrame(animate); resize(); controls.update();
+  if(scn){ const f = new THREE.Vector3(); camera.getWorldDirection(f); const fx = f.x, fy = -f.z, l = Math.hypot(fx, fy) || 1, n = scn.north;
+    const cross = (fx / l) * n[1] - (fy / l) * n[0], dot = (fx / l) * n[0] + (fy / l) * n[1];
+    document.getElementById('ng').setAttribute('transform', 'rotate(' + (-Math.atan2(cross, dot) * 180 / Math.PI) + ')'); }
+  renderer.render(scene, camera);
+}
+animate();
+window.__ready = function(){ return !!scn; };
+</script></body></html>
