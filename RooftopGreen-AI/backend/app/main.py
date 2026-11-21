@@ -5,10 +5,20 @@ from app.database import init_db
 from app.routes import preferences, roof, garden, plants_routes, suppliers, plant_doctor, visualizer, generate_design, roof_detect
 import os
 
+cors_origins_env = os.getenv(
+    "CORS_ORIGINS",
+    "http://localhost:5173,http://localhost:3000,https://rooftop-ai.vercel.app",
+)
+allowed_origins = [
+    origin.strip().rstrip("/")
+    for origin in cors_origins_env.split(",")
+    if origin.strip()
+]
+
 app = FastAPI(title="RooftopGreen AI API", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
